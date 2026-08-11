@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>友链 - DogNav</title>
+    <title>友链 - 跃迁向导</title>
     <link rel="icon" href="/ico.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -203,17 +203,17 @@
     </div>
 </div>
 
-<footer class="footer"><p>DogNav &copy; 2026 — Design by <a href="https://www.125877.xyz" target="_blank">CangDog</a> · <a href="https://github.com/BYGD" target="_blank">GitHub</a></p></footer>
+<footer class="footer"><p>跃迁向导 &copy; 2026 — Design by <a href="https://yueqianxiangdao.com" target="_blank">CangDog</a> · <a href="https://yueqianxiangdao.com" target="_blank">GitHub</a></p></footer>
 
 <script>
 const H = document.documentElement;
-const savedTheme = localStorage.getItem('dognav-theme');
+const savedTheme = localStorage.getItem('跃迁向导-theme');
 if (savedTheme) H.setAttribute('data-theme', savedTheme);
 
 document.getElementById('themeBtn').addEventListener('click', () => {
     const next = H.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     H.setAttribute('data-theme', next);
-    localStorage.setItem('dognav-theme', next);
+    localStorage.setItem('跃迁向导-theme', next);
 });
 document.getElementById('mobBtn').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
 const obs = new IntersectionObserver(entries => {
@@ -300,7 +300,7 @@ function renderFriendLinks(links) {
                 }, 50);
             }
             if (page && page.title) {
-                document.title = page.title + ' - DogNav';
+                document.title = page.title + ' - 跃迁向导';
             }
         }
 
