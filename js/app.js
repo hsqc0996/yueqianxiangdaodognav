@@ -7,7 +7,7 @@ const categories = [
   {
     id: 'popular', name: '常用推荐', icon: 'star',
     sites: [
-      { name: 'GitHub', url: 'https://yueqianxiangdao.com/#', desc: '全球最大的代码托管平台', ico: 'github.png' },
+      { name: 'GitHub', url: 'https://github.com', desc: '全球最大的代码托管平台', ico: 'github.png' },
       { name: 'Gitee', url: 'https://gitee.com', desc: '国内最大的代码托管平台', ico: 'gitee.png' },
       { name: '吾爱破解', url: 'https://www.52pojie.cn', desc: '软件安全与逆向分析论坛', ico: '52.png' },
       { name: '精易论坛', url: 'https://bbs.125.la', desc: '编程学习交流论坛', ico: 'jingyi.png' },
