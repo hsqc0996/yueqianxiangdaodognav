@@ -1,5 +1,5 @@
 /* ============================================
-   DogNav — Main Application Logic
+   跃迁向导 — Main Application Logic
    ============================================ */
 
 // ---- Navigation Data ----
