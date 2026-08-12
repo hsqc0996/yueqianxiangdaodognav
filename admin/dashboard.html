@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -226,16 +226,7 @@
                 <div class="form-group">
                     <label>分类 *</label>
                     <select id="siteCategory" required>
-                        <option value="recommend">⭐ 常用推荐</option>
-                        <option value="video">🎬 影视资源</option>
-                        <option value="anime">🌸 动漫</option>
-                        <option value="software">💿 软件博客</option>
-                        <option value="tools">🔧 在线工具</option>
-                        <option value="news">📰 资讯</option>
-                        <option value="community">💬 社区</option>
-                        <option value="ai">🤖 AI 工具</option>
-                        <option value="dev">💻 开发编程</option>
-                        <option value="design">🎨 设计素材</option>
+                        <option value="">加载中...</option>
                     </select>
                 </div>
                 <div class="form-group"><label>排序权重</label><input type="number" id="siteSort" value="0" min="0"></div>
@@ -248,24 +239,61 @@
     </div>
 
     <script>
-        const CATEGORIES = {
-            recommend: '⭐ 常用推荐', video: '🎬 影视资源', anime: '🌸 动漫',
-            software: '💿 软件博客', tools: '🔧 在线工具', news: '📰 资讯',
-            community: '💬 社区', ai: '🤖 AI 工具', dev: '💻 开发编程', design: '🎨 设计素材'
-        };
-
+        // ─── CATEGORIES 将从 API 动态加载 ───
+        let CATEGORIES = {};
         let allSites = [];
 
         if (!sessionStorage.getItem('admin_logged_in')) window.location.href = '/admin';
         function logout() { sessionStorage.removeItem('admin_logged_in'); sessionStorage.removeItem('admin_token'); window.location.href = '/admin'; }
         function authHeaders() { return { 'Authorization': 'Bearer ' + sessionStorage.getItem('admin_token'), 'Content-Type': 'application/json' }; }
 
+        // ─── 加载分类列表并填充下拉框 ───
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/categories');
+                if (!res.ok) throw new Error('网络错误');
+                const cats = await res.json();
+                // 按 sort_order 排序
+                cats.sort((a, b) => a.sort_order - b.sort_order);
+                // 重建 CATEGORIES 对象（用于显示分类名称）
+                CATEGORIES = {};
+                cats.forEach(c => {
+                    CATEGORIES[c.id] = (c.icon || '📁') + ' ' + c.name;
+                });
+                // 填充下拉框
+                const select = document.getElementById('siteCategory');
+                select.innerHTML = '<option value="">请选择分类</option>';
+                cats.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = (c.icon || '📁') + ' ' + c.name;
+                    select.appendChild(opt);
+                });
+                // 填充筛选器下拉框
+                const filterSelect = document.getElementById('categoryFilter');
+                const currentFilter = filterSelect.value;
+                // 保留“全部分类”选项
+                filterSelect.innerHTML = '<option value="">全部分类</option>';
+                cats.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = (c.icon || '📁') + ' ' + c.name;
+                    filterSelect.appendChild(opt);
+                });
+                if (currentFilter) filterSelect.value = currentFilter;
+            } catch (err) {
+                console.error('加载分类失败:', err);
+                const select = document.getElementById('siteCategory');
+                select.innerHTML = '<option value="">加载失败，请刷新</option>';
+            }
+        }
+
         async function loadSites() {
             const res = await fetch('/api/sites?sort=created');
             allSites = await res.json();
             renderSites(allSites);
             updateStats();
-            updateCategoryFilter();
+            // 分类筛选器已在 loadCategories 中填充，但站点数据加载后可能需要更新
         }
 
         function renderSites(sites) {
@@ -275,12 +303,13 @@
             empty.style.display = 'none';
             tbody.innerHTML = sites.map(s => {
                 const iconHtml = s.icon ? (s.icon.startsWith('http') ? `<img class="site-icon-img" src="${s.icon}" onerror="this.style.display='none'">` : s.icon + ' ') : '';
+                const categoryDisplay = CATEGORIES[s.category] || s.category || '未分类';
                 return `
                 <tr>
                     <td><div class="site-name">${iconHtml}${s.name}</div></td>
                     <td><a href="${s.url}" target="_blank" class="site-url">${s.url}</a></td>
                     <td>${s.description || '-'}</td>
-                    <td><span class="site-category">${CATEGORIES[s.category] || s.category}</span></td>
+                    <td><span class="site-category">${categoryDisplay}</span></td>
                     <td>
                         <button class="btn-edit" onclick="editSite(${s.id})">编辑</button>
                         <button class="btn-delete" onclick="deleteSite(${s.id})">删除</button>
@@ -294,12 +323,6 @@
             document.getElementById('totalCategories').textContent = new Set(allSites.map(s => s.category)).size;
         }
 
-        function updateCategoryFilter() {
-            const select = document.getElementById('categoryFilter');
-            const cats = [...new Set(allSites.map(s => s.category))];
-            select.innerHTML = '<option value="">全部分类</option>' + cats.map(c => `<option value="${c}">${CATEGORIES[c] || c}</option>`).join('');
-        }
-
         function openModal(site = null) {
             document.getElementById('modalTitle').textContent = site ? '编辑网站' : '添加网站';
             document.getElementById('siteId').value = site ? site.id : '';
@@ -307,7 +330,7 @@
             document.getElementById('siteUrl').value = site ? site.url : '';
             document.getElementById('siteDesc').value = site ? site.description || '' : '';
             document.getElementById('siteIcon').value = site ? site.icon || '' : '';
-            document.getElementById('siteCategory').value = site ? site.category : 'recommend';
+            document.getElementById('siteCategory').value = site ? site.category : '';
             document.getElementById('siteSort').value = site ? site.sort_order || 0 : 0;
             document.getElementById('modalOverlay').classList.add('show');
         }
@@ -348,7 +371,7 @@
 
         async function fetchDesc() {
             const urlInput = document.getElementById('siteUrl');
-                        const descInput = document.getElementById('siteDesc');
+            const descInput = document.getElementById('siteDesc');
             const btn = document.getElementById('fetchDescBtn');
             const url = urlInput.value.trim();
             if (!url) { showToast('请先填写URL'); return; }
@@ -413,7 +436,12 @@
         }
 
         document.getElementById('modalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
-        loadSites();
+
+        // ─── 页面初始化 ───
+        (async function init() {
+            await loadCategories();  // 先加载分类
+            await loadSites();       // 再加载站点
+        })();
     </script>
 </body>
 </html>
