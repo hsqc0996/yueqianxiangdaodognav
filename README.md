@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center"> 
 
 <img src="https://raw.githubusercontent.com/BYGD/dog-nav/main/ico.ico" width="100" style="border-radius:50%" alt="DogNav Logo">
 
