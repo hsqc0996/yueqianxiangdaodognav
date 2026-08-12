@@ -914,15 +914,36 @@ const C = {
 let curE = 'baidu', curC = 'all';
 
 // ═══════════════════════════════════════════
-// RENDER
+// RENDER — 修复排序逻辑：按分类栏按钮顺序显示
 // ═══════════════════════════════════════════
 function render(cat = 'all') {
     const a = document.getElementById('cardsArea');
     const f = cat === 'all' ? S : S.filter(s => (s.c || s.category) === cat);
+
+    // 按分类分组
     const g = {};
-    f.forEach(s => { const k = s.c || s.category; if (!g[k]) g[k] = []; g[k].push(s); });
+    f.forEach(s => {
+        const k = s.c || s.category;
+        if (!g[k]) g[k] = [];
+        g[k].push(s);
+    });
+
+    // ─── 关键修改：从分类栏获取排序顺序（即后台 sort_order） ───
+    const orderMap = {};
+    document.querySelectorAll('.cat-pill[data-cat]').forEach((el, i) => {
+        orderMap[el.dataset.cat] = i;
+    });
+
+    // 按分类栏顺序排序（未在按钮中的分类排最后）
+    const sortedKeys = Object.keys(g).sort((a, b) => {
+        const orderA = orderMap[a] ?? 999;
+        const orderB = orderMap[b] ?? 999;
+        return orderA - orderB;
+    });
+
     let h = '';
-    for (const [k, items] of Object.entries(g)) {
+    for (const k of sortedKeys) {
+        const items = g[k];
         const c = C[k] || { i: '📁', l: k };
         h += `<div class="sec-head rv"><div class="sec-ico">${c.i}</div><div class="sec-title">${c.l}</div><div class="sec-line"></div></div>
         <div class="card-grid">${items.map(s => {
