@@ -5,23 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DogNav 分类管理</title>
     <style>
+        /* 样式与之前相同，略作调整，新增移动按钮样式 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; min-height: 100vh; display: flex; }
-        .sidebar {
-            width: 240px; background: #1e1e2d; min-height: 100vh; position: fixed; left: 0; top: 0;
-            display: flex; flex-direction: column; z-index: 100;
-        }
+        .sidebar { width: 240px; background: #1e1e2d; min-height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; z-index: 100; }
         .sidebar-brand { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .sidebar-brand .logo { font-size: 28px; }
         .sidebar-brand .text { font-size: 18px; font-weight: 700; color: white; }
         .sidebar-brand .text span { color: #7c83ff; }
         .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
         .nav-section { padding: 8px 20px 4px; font-size: 11px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
-        .sidebar-nav a {
-            display: flex; align-items: center; gap: 12px; padding: 10px 20px;
-            color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px;
-            transition: all 0.2s; border-left: 3px solid transparent;
-        }
+        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 10px 20px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; transition: all 0.2s; border-left: 3px solid transparent; }
         .sidebar-nav a:hover { color: white; background: rgba(255,255,255,0.05); }
         .sidebar-nav a.active { color: white; background: rgba(124,131,255,0.1); border-left-color: #7c83ff; }
         .sidebar-nav a .icon { font-size: 18px; width: 24px; text-align: center; }
@@ -38,201 +32,73 @@
         .btn-add { padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .btn-add:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
 
-        /* ─── 分类卡片 ─── */
-        .category-card {
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: box-shadow 0.2s;
-            overflow: hidden;
-        }
+        .category-card { background: white; border-radius: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; }
         .category-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .category-header {
-            padding: 14px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.15s;
-        }
+        .category-header { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: background 0.15s; }
         .category-header:hover { background: #fafbfc; }
-        .category-header .left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex: 1;
-        }
+        .category-header .left { display: flex; align-items: center; gap: 14px; flex: 1; }
         .category-header .icon { font-size: 22px; }
         .category-header .info { flex: 1; }
         .category-header .name { font-weight: 600; color: #333; font-size: 15px; }
         .category-header .id { font-size: 12px; color: #888; }
-        .category-header .stats {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-right: 12px;
-        }
-        .category-header .site-count {
-            background: #e8f0fe;
-            color: #1a73e8;
-            padding: 2px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-        }
+        .category-header .stats { display: flex; align-items: center; gap: 12px; margin-right: 12px; }
+        .category-header .site-count { background: #e8f0fe; color: #1a73e8; padding: 2px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
         .badge-active { background: #e8f5e9; color: #2e7d32; }
         .badge-inactive { background: #fafafa; color: #999; }
-        .expand-icon {
-            font-size: 18px;
-            color: #aaa;
-            transition: transform 0.25s ease;
-            margin-left: 4px;
-        }
+        .expand-icon { font-size: 18px; color: #aaa; transition: transform 0.25s ease; margin-left: 4px; }
         .expand-icon.open { transform: rotate(180deg); }
-        .category-actions {
-            display: flex;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-        .btn-edit, .btn-delete {
-            padding: 5px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-        }
+        .category-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .btn-edit, .btn-delete { padding: 5px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
         .btn-edit { background: #e3f2fd; color: #1976d2; }
         .btn-edit:hover { background: #bbdefb; }
         .btn-delete { background: #ffebee; color: #c62828; }
         .btn-delete:hover { background: #ffcdd2; }
 
-        /* ─── 展开区域 ─── */
-        .category-body {
-            display: none;
-            padding: 0 20px 20px 20px;
-            border-top: 1px solid #f0f0f0;
-            background: #fafbfc;
-        }
+        .category-body { display: none; padding: 0 20px 20px 20px; border-top: 1px solid #f0f0f0; background: #fafbfc; }
         .category-body.open { display: block; }
-        .site-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            border-bottom: 1px solid #eee;
-            background: white;
-            border-radius: 6px;
-            margin-top: 6px;
-        }
+        .site-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #eee; background: white; border-radius: 6px; margin-top: 6px; }
         .site-item:last-child { border-bottom: none; }
-        .site-item .site-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-            min-width: 0;
-        }
-        .site-item .site-icon {
-            font-size: 18px;
-            width: 28px;
-            text-align: center;
-        }
-        .site-item .site-name {
-            font-weight: 500;
-            color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .site-item .site-url {
-            color: #7c83ff;
-            font-size: 13px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-left: 12px;
-        }
-        .site-item .site-url a {
-            color: #7c83ff;
-            text-decoration: none;
-        }
+        .site-item .site-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+        .site-item .site-icon { font-size: 18px; width: 28px; text-align: center; }
+        .site-item .site-name { font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .site-item .site-url { color: #7c83ff; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 12px; }
+        .site-item .site-url a { color: #7c83ff; text-decoration: none; }
         .site-item .site-url a:hover { text-decoration: underline; }
-        .site-item .site-actions {
-            display: flex;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-        .btn-site-edit, .btn-site-delete {
-            padding: 3px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
+        .site-item .site-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .btn-site-edit, .btn-site-delete, .btn-site-move {
+            padding: 3px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
         }
         .btn-site-edit { background: #e3f2fd; color: #1976d2; }
         .btn-site-edit:hover { background: #bbdefb; }
         .btn-site-delete { background: #ffebee; color: #c62828; }
         .btn-site-delete:hover { background: #ffcdd2; }
-        .empty-sites {
-            text-align: center;
-            padding: 20px;
-            color: #999;
-            font-size: 14px;
-        }
+        .btn-site-move { background: #fff3e0; color: #e65100; }
+        .btn-site-move:hover { background: #ffe0b2; }
+        .empty-sites { text-align: center; padding: 20px; color: #999; font-size: 14px; }
 
-        /* ─── 模态框（编辑站点用） ─── */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-            display: none; align-items: center; justify-content: center; z-index: 1000;
-        }
+        /* 模态框 */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
         .modal-overlay.show { display: flex; }
-        .modal {
-            background: white; padding: 30px; border-radius: 12px;
-            width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
-        }
+        .modal { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
         .modal h2 { margin-bottom: 20px; color: #333; }
         .modal .form-group { margin-bottom: 16px; }
         .modal label { display: block; margin-bottom: 6px; font-weight: 500; color: #555; font-size: 14px; }
-        .modal input, .modal select, .modal textarea {
-            width: 100%; padding: 10px; border: 1px solid #ddd;
-            border-radius: 6px; font-size: 14px; font-family: inherit;
-        }
-        .modal input:focus, .modal select:focus, .modal textarea:focus {
-            outline: none; border-color: #667eea;
-        }
+        .modal input, .modal select, .modal textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; }
+        .modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: #667eea; }
         .modal textarea { resize: vertical; min-height: 60px; }
-        .modal-actions {
-            display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;
-        }
-        .btn-cancel {
-            padding: 10px 20px; background: #f5f5f5; border: 1px solid #ddd;
-            border-radius: 6px; cursor: pointer;
-        }
-        .btn-save {
-            padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;
-        }
-        .toast {
-            position: fixed; top: 20px; right: 20px;
-            padding: 16px 24px; background: #333; color: white;
-            border-radius: 8px; font-size: 14px;
-            opacity: 0; transform: translateY(-20px);
-            transition: all 0.3s; z-index: 2000;
-        }
+        .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+        .btn-cancel { padding: 10px 20px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; }
+        .btn-save { padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+        .toast { position: fixed; top: 20px; right: 20px; padding: 16px 24px; background: #333; color: white; border-radius: 8px; font-size: 14px; opacity: 0; transform: translateY(-20px); transition: all 0.3s; z-index: 2000; }
         .toast.show { opacity: 1; transform: translateY(0); }
         .toast.success { background: #22c55e; }
         .toast.error { background: #ef4444; }
     </style>
 </head>
 <body>
+    <!-- 侧边栏（同前） -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <div class="logo">🐕</div>
@@ -306,7 +172,7 @@
         </div>
     </div>
 
-    <!-- 编辑站点模态框 -->
+    <!-- 编辑站点模态框（同前） -->
     <div class="modal-overlay" id="siteModal">
         <div class="modal">
             <h2 id="siteModalTitle">编辑站点</h2>
@@ -344,6 +210,31 @@
         </div>
     </div>
 
+    <!-- 新增：移动站点模态框 -->
+    <div class="modal-overlay" id="moveModal">
+        <div class="modal">
+            <h2>移动站点到其他分类</h2>
+            <form id="moveForm">
+                <input type="hidden" id="moveSiteId">
+                <input type="hidden" id="moveCurrentCategory">
+                <div class="form-group">
+                    <label>当前分类</label>
+                    <p style="padding:8px 12px; background:#f5f5f5; border-radius:4px; color:#555;" id="moveCurrentName"></p>
+                </div>
+                <div class="form-group">
+                    <label>目标分类 *</label>
+                    <select id="moveTargetCategory" required>
+                        <option value="">-- 请选择 --</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeMoveModal()">取消</button>
+                    <button type="submit" class="btn-save">确认移动</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
@@ -373,10 +264,10 @@
         // ─── 全局变量 ───
         let allCats = [];
         let allSites = [];
-        let expandedCatId = null; // 当前展开的分类ID
+        let expandedCatId = null;
 
         // ─── 加载数据 ───
-        async function loadCategories() {
+        async function loadData() {
             try {
                 const [catsRes, sitesRes] = await Promise.all([
                     fetch('/api/categories'),
@@ -398,7 +289,7 @@
             return allSites.filter(s => (s.category || s.c) === categoryId && s.status !== 'inactive');
         }
 
-        // ─── 渲染分类列表 ───
+        // ─── 渲染 ───
         function renderCategories() {
             const container = document.getElementById('categoryList');
             if (!allCats || allCats.length === 0) {
@@ -439,7 +330,6 @@
             }).join('');
         }
 
-        // ─── 渲染站点列表（展开区域） ───
         function renderSiteList(categoryId) {
             const sites = getSitesByCategory(categoryId);
             if (sites.length === 0) {
@@ -456,47 +346,36 @@
                     </div>
                     <div class="site-actions">
                         <button class="btn-site-edit" onclick="editSite(${s.id})">编辑</button>
+                        <button class="btn-site-move" onclick="openMoveModal(${s.id})">移动</button>
                         <button class="btn-site-delete" onclick="deleteSite(${s.id})">删除</button>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        // ─── 展开/收起分类 ───
+        // ─── 展开/收起 ───
         async function toggleCategory(categoryId) {
             if (expandedCatId === categoryId) {
-                // 收起当前
                 expandedCatId = null;
             } else {
-                // 展开新的，先收起旧的
                 expandedCatId = categoryId;
-                // 如果该分类尚未加载站点列表，则加载（但我们已经预先加载所有站点，直接渲染即可）
-                const body = document.getElementById(`body-${categoryId}`);
-                if (body) {
-                    const sitesContainer = document.getElementById(`sites-${categoryId}`);
-                    if (sitesContainer) {
-                        // 如果还没有内容，渲染
-                        if (!sitesContainer.innerHTML) {
-                            sitesContainer.innerHTML = renderSiteList(categoryId);
-                        }
-                    }
+                // 如果尚未渲染站点列表，则渲染
+                const container = document.getElementById(`sites-${categoryId}`);
+                if (container && !container.innerHTML) {
+                    container.innerHTML = renderSiteList(categoryId);
                 }
             }
-            // 重新渲染所有分类以更新展开状态
             renderCategories();
-            // 滚动到当前展开的分类
             if (expandedCatId) {
                 const card = document.querySelector(`.category-card[data-cat-id="${expandedCatId}"]`);
                 if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
-        // ─── 刷新某个分类的站点列表（用于删除/编辑后更新） ───
         function refreshCategorySites(categoryId) {
             const container = document.getElementById(`sites-${categoryId}`);
             if (container) {
                 container.innerHTML = renderSiteList(categoryId);
-                // 更新站点数量
                 const count = getSiteCount(categoryId);
                 const header = document.querySelector(`.category-card[data-cat-id="${categoryId}"] .site-count`);
                 if (header) header.textContent = `📋 ${count} 个站点`;
@@ -536,7 +415,7 @@
                 await fetch(`/api/categories/${id}`, { method: 'DELETE', headers: authHeaders() });
                 showToast('分类已删除');
                 if (expandedCatId === id) expandedCatId = null;
-                loadCategories();
+                await loadData();
             } catch (err) {
                 showToast('删除失败', 'error');
             }
@@ -560,7 +439,7 @@
                 });
                 showToast(isEdit ? '已更新' : '已添加');
                 closeCategoryModal();
-                loadCategories();
+                await loadData();
             } catch (err) {
                 showToast('保存失败', 'error');
             }
@@ -575,12 +454,9 @@
             document.getElementById('editSiteDesc').value = site ? site.description || '' : '';
             document.getElementById('editSiteIcon').value = site ? site.icon || '' : '';
             document.getElementById('editSiteSort').value = site ? site.sort_order || 0 : 0;
-
-            // 填充分类下拉框
             const catSelect = document.getElementById('editSiteCategory');
             catSelect.innerHTML = allCats.map(c => `<option value="${c.id}" ${site && site.category === c.id ? 'selected' : ''}>${c.icon || '📁'} ${c.name}</option>`).join('');
-            if (!site) catSelect.value = allCats.length > 0 ? allCats[0].id : '';
-
+            if (!site && allCats.length) catSelect.value = allCats[0].id;
             document.getElementById('siteModal').classList.add('show');
         }
 
@@ -595,20 +471,14 @@
 
         async function deleteSite(id) {
             if (!confirm('确定要删除这个站点吗？')) return;
-            const site = allSites.find(s => s.id === id);
             try {
                 await fetch(`/api/sites/${id}`, { method: 'DELETE', headers: authHeaders() });
                 showToast('站点已删除');
-                // 刷新数据
-                await loadCategories(); // 重新加载所有数据
-                // 如果之前有展开的分类，保持展开
+                await loadData();
+                // 保持展开
                 if (expandedCatId) {
-                    // 重新展开
-                    const body = document.getElementById(`body-${expandedCatId}`);
-                    if (body) {
-                        const container = document.getElementById(`sites-${expandedCatId}`);
-                        if (container) container.innerHTML = renderSiteList(expandedCatId);
-                    }
+                    const container = document.getElementById(`sites-${expandedCatId}`);
+                    if (container) container.innerHTML = renderSiteList(expandedCatId);
                 }
             } catch (err) {
                 showToast('删除失败', 'error');
@@ -634,16 +504,86 @@
                 });
                 showToast(id ? '站点已更新' : '站点已添加');
                 closeSiteModal();
-                loadCategories();
+                await loadData();
                 if (expandedCatId) {
-                    // 重新展开
-                    setTimeout(() => {
-                        const container = document.getElementById(`sites-${expandedCatId}`);
-                        if (container) container.innerHTML = renderSiteList(expandedCatId);
-                    }, 100);
+                    const container = document.getElementById(`sites-${expandedCatId}`);
+                    if (container) container.innerHTML = renderSiteList(expandedCatId);
                 }
             } catch (err) {
                 showToast('保存失败', 'error');
+            }
+        });
+
+        // ─── ★ 新增：移动站点 ───
+        function openMoveModal(siteId) {
+            const site = allSites.find(s => s.id === siteId);
+            if (!site) { showToast('站点不存在', 'error'); return; }
+            const currentCat = allCats.find(c => c.id === site.category);
+            document.getElementById('moveSiteId').value = siteId;
+            document.getElementById('moveCurrentCategory').value = site.category;
+            document.getElementById('moveCurrentName').textContent = currentCat ? `${currentCat.icon || '📁'} ${currentCat.name}` : '未分类';
+
+            // 填充目标分类下拉（排除当前分类）
+            const select = document.getElementById('moveTargetCategory');
+            select.innerHTML = '<option value="">-- 请选择 --</option>';
+            allCats.forEach(c => {
+                if (c.id !== site.category) {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = `${c.icon || '📁'} ${c.name}`;
+                    select.appendChild(opt);
+                }
+            });
+            if (allCats.length <= 1) {
+                showToast('没有其他分类可移动', 'error');
+                return;
+            }
+            document.getElementById('moveModal').classList.add('show');
+        }
+
+        function closeMoveModal() {
+            document.getElementById('moveModal').classList.remove('show');
+        }
+
+        document.getElementById('moveForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const siteId = document.getElementById('moveSiteId').value;
+            const targetCategory = document.getElementById('moveTargetCategory').value;
+            if (!targetCategory) {
+                showToast('请选择目标分类', 'error');
+                return;
+            }
+            try {
+                // 获取当前站点数据，只更新 category
+                const site = allSites.find(s => s.id == siteId);
+                if (!site) { showToast('站点不存在', 'error'); return; }
+                const data = {
+                    name: site.name,
+                    url: site.url,
+                    description: site.description || '',
+                    icon: site.icon || '',
+                    category: targetCategory,
+                    sort_order: site.sort_order || 0
+                };
+                await fetch(`/api/sites/${siteId}`, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify(data)
+                });
+                showToast('移动成功');
+                closeMoveModal();
+                await loadData();
+                // 保持当前展开的分类（如果是原分类或目标分类，都刷新）
+                if (expandedCatId) {
+                    const container = document.getElementById(`sites-${expandedCatId}`);
+                    if (container) container.innerHTML = renderSiteList(expandedCatId);
+                    // 更新数量
+                    const count = getSiteCount(expandedCatId);
+                    const header = document.querySelector(`.category-card[data-cat-id="${expandedCatId}"] .site-count`);
+                    if (header) header.textContent = `📋 ${count} 个站点`;
+                }
+            } catch (err) {
+                showToast('移动失败', 'error');
             }
         });
 
@@ -654,9 +594,12 @@
         document.getElementById('siteModal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) closeSiteModal();
         });
+        document.getElementById('moveModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeMoveModal();
+        });
 
         // ─── 初始化 ───
-        loadCategories();
+        loadData();
     </script>
 </body>
 </html>
