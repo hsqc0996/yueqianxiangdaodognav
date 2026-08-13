@@ -297,22 +297,47 @@
         .eng-btn.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
         /* ═══════════════════════════════════════════
-           CATEGORY BAR
+           CATEGORY BAR — 手机端滑动，电脑端换行
            ═══════════════════════════════════════════ */
         .cat-bar {
-            position: relative; z-index: 1;
-            max-width: 1400px; margin: 0 auto var(--space-md);
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto var(--space-md);
             padding: 0 var(--space-lg);
-            display: flex; gap: 6px; overflow-x: auto;
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
             scrollbar-width: none;
+            flex-wrap: nowrap;   /* 手机端不换行，可滑动 */
+            -webkit-overflow-scrolling: touch;
         }
-        .cat-bar::-webkit-scrollbar { display: none; }
+        .cat-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 电脑端（屏幕宽度 > 768px）：换行显示 */
+        @media (min-width: 769px) {
+            .cat-bar {
+                overflow-x: visible;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+        }
+
         .cat-pill {
-            flex-shrink: 0; padding: 6px 16px;
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: var(--r-pill); color: var(--text-2);
-            font-size: var(--text-sm); font-weight: 500; cursor: pointer;
-            transition: all 0.25s var(--ease); white-space: nowrap;
+            flex-shrink: 0;
+            padding: 6px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-pill);
+            color: var(--text-2);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s var(--ease);
+            white-space: nowrap;
             backdrop-filter: blur(8px);
         }
         .cat-pill:hover { background: var(--bg-card-hover); border-color: var(--border-hover); }
