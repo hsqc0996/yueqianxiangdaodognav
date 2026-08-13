@@ -63,7 +63,8 @@
         .site-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #eee; background: white; border-radius: 6px; margin-top: 6px; }
         .site-item:last-child { border-bottom: none; }
         .site-item .site-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-        .site-item .site-icon { font-size: 18px; width: 28px; text-align: center; }
+        .site-item .site-icon { width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .site-item .site-icon img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
         .site-item .site-name {
             font-weight: 500;
             color: #333;
@@ -190,7 +191,11 @@
             <h2 id="siteModalTitle">添加站点</h2>
             <form id="siteForm">
                 <input type="hidden" id="editSiteId">
-                <div class="form-group"><label>网站名称 *</label><input type="text" id="editSiteName" required></div>
+                <div class="form-group">
+                    <label>网站名称 *</label>
+                    <input type="text" id="editSiteName" required>
+                    <div style="font-size:12px;color:#888;margin-top:4px;">📌 请填写站点名称，如“元宝”、“ChatGPT”，不要填写图标 URL</div>
+                </div>
                 <div class="form-group"><label>URL *</label><input type="url" id="editSiteUrl" required placeholder="https://"></div>
                 <div class="form-group">
                     <label>描述 <button type="button" class="btn-fetch-icon" onclick="fetchDesc()">自动获取</button></label>
@@ -266,7 +271,7 @@
             toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // ─── 自动获取图标（修复版：只填充有效的图标，不污染名称） ───
+        // ─── 自动获取图标（只填充图标字段，绝不污染名称） ───
         async function fetchIcon() {
             const urlInput = document.getElementById('editSiteUrl');
             const iconInput = document.getElementById('editSiteIcon');
@@ -279,13 +284,11 @@
                 const res = await fetch('/api/fetch-icon?url=' + encodeURIComponent(url));
                 const data = await res.json();
                 if (data.icon && typeof data.icon === 'string' && data.icon.trim().length > 0) {
-                    // ✅ 只填充图标字段，绝不修改名称
                     iconInput.value = data.icon.trim();
                     showToast('图标已获取');
                 } else {
                     showToast('未获取到有效图标，可手动填写', 'error');
                 }
-                // 同时尝试填充描述（仅当描述为空时）
                 if (data.description && typeof data.description === 'string' && data.description.trim().length > 0) {
                     const descInput = document.getElementById('editSiteDesc');
                     if (!descInput.value.trim()) {
@@ -299,7 +302,7 @@
             btn.textContent = ' 自动获取';
         }
 
-        // ─── 自动获取描述（仅填充描述，不碰名称） ───
+        // ─── 自动获取描述（仅填充描述） ───
         async function fetchDesc() {
             const urlInput = document.getElementById('editSiteUrl');
             const descInput = document.getElementById('editSiteDesc');
@@ -398,29 +401,39 @@
             }).join('');
         }
 
-        // ─── 渲染站点列表（修正：避免显示URL作为名称） ───
+        // ─── ★ 核心修复：图标显示为图片，绝不显示文本URL ───
         function renderSiteList(categoryId) {
             const sites = getSitesByCategory(categoryId);
             if (sites.length === 0) {
                 return `<div class="empty-sites">该分类下暂无站点</div>`;
             }
             return sites.map(s => {
+                // 1. 处理显示名称（如果 name 是 URL，提取域名）
                 let displayName = s.name || '未命名';
-                // 如果名称是 URL，提取域名作为显示名称
                 if (displayName.startsWith('http://') || displayName.startsWith('https://')) {
                     try {
-                        const urlObj = new URL(displayName);
+                        const urlObj = new URL(s.url || displayName);
                         displayName = urlObj.hostname.replace(/^www\./, '');
                     } catch {
                         displayName = '站点';
                     }
                 }
-                const icon = s.icon || '🌐';
+                if (displayName.length > 30) {
+                    displayName = displayName.substring(0, 30) + '…';
+                }
+
+                // 2. 处理图标：如果是 URL 则渲染为图片，否则显示为 emoji/文本
+                let iconHtml = s.icon || '🌐';
+                if (typeof iconHtml === 'string' && (iconHtml.startsWith('http://') || iconHtml.startsWith('https://'))) {
+                    iconHtml = `<img src="${iconHtml}" alt="图标" onerror="this.outerHTML='🌐'">`;
+                }
+
+                const titleAttr = (s.name && s.name.length > 30) ? `title="${s.name}"` : '';
                 return `
                 <div class="site-item" data-site-id="${s.id}">
                     <div class="site-info">
-                        <span class="site-icon">${icon}</span>
-                        <span class="site-name" title="${s.name}">${displayName}</span>
+                        <div class="site-icon">${iconHtml}</div>
+                        <span class="site-name" ${titleAttr}>${displayName}</span>
                         <span class="site-url"><a href="${s.url}" target="_blank">${s.url}</a></span>
                     </div>
                     <div class="site-actions">
