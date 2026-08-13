@@ -1,690 +1,386 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DogNav 分类管理</title>
+    <title>提交收录 - 跃迁向导</title>
+    <link rel="icon" href="/ico.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; min-height: 100vh; display: flex; }
-        .sidebar { width: 240px; background: #1e1e2d; min-height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; z-index: 100; }
-        .sidebar-brand { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .sidebar-brand .logo { font-size: 28px; }
-        .sidebar-brand .text { font-size: 18px; font-weight: 700; color: white; }
-        .sidebar-brand .text span { color: #7c83ff; }
-        .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
-        .nav-section { padding: 8px 20px 4px; font-size: 11px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
-        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 10px 20px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; transition: all 0.2s; border-left: 3px solid transparent; }
-        .sidebar-nav a:hover { color: white; background: rgba(255,255,255,0.05); }
-        .sidebar-nav a.active { color: white; background: rgba(124,131,255,0.1); border-left-color: #7c83ff; }
-        .sidebar-nav a .icon { font-size: 18px; width: 24px; text-align: center; }
-        .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .sidebar-footer a { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.4); text-decoration: none; font-size: 13px; padding: 8px 0; }
-        .sidebar-footer a:hover { color: #ff6b6b; }
-        .main { margin-left: 240px; flex: 1; min-height: 100vh; }
-        .topbar { background: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
-        .topbar h1 { font-size: 18px; color: #333; font-weight: 600; }
-        .topbar .user-info { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #666; }
-        .topbar .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 600; }
-        .container { padding: 24px; }
-        .toolbar { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .btn-add { padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
-
-        .category-card { background: white; border-radius: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; }
-        .category-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .category-header { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: background 0.15s; }
-        .category-header:hover { background: #fafbfc; }
-        .category-header .left { display: flex; align-items: center; gap: 14px; flex: 1; }
-        .category-header .icon { font-size: 22px; }
-        .category-header .info { flex: 1; }
-        .category-header .name { font-weight: 600; color: #333; font-size: 15px; }
-        .category-header .id { font-size: 12px; color: #888; }
-        .category-header .stats { display: flex; align-items: center; gap: 12px; margin-right: 12px; }
-        .category-header .site-count { background: #e8f0fe; color: #1a73e8; padding: 2px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-        .badge-active { background: #e8f5e9; color: #2e7d32; }
-        .badge-inactive { background: #fafafa; color: #999; }
-        .expand-icon { font-size: 18px; color: #aaa; transition: transform 0.25s ease; margin-left: 4px; }
-        .expand-icon.open { transform: rotate(180deg); }
-        .category-actions { display: flex; gap: 6px; flex-shrink: 0; }
-        .btn-edit, .btn-delete, .btn-add-site {
-            padding: 5px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;
+        :root {
+            --text-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.78rem);
+            --text-sm: clamp(0.78rem, 0.73rem + 0.25vw, 0.88rem);
+            --text-base: clamp(0.88rem, 0.83rem + 0.25vw, 1rem);
+            --text-lg: clamp(1rem, 0.92rem + 0.4vw, 1.2rem);
+            --text-xl: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);
+            --text-2xl: clamp(1.4rem, 1.15rem + 1.2vw, 2rem);
+            --text-3xl: clamp(1.8rem, 1.3rem + 2.5vw, 3rem);
+            --space-xs: clamp(0.2rem, 0.15rem + 0.25vw, 0.4rem);
+            --space-sm: clamp(0.4rem, 0.3rem + 0.4vw, 0.65rem);
+            --space-md: clamp(0.6rem, 0.4rem + 1vw, 1.2rem);
+            --space-lg: clamp(1rem, 0.6rem + 2vw, 2.5rem);
+            --space-xl: clamp(1.5rem, 0.8rem + 3.5vw, 4rem);
+            --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-pill: 9999px;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-edit { background: #e3f2fd; color: #1976d2; }
-        .btn-edit:hover { background: #bbdefb; }
-        .btn-delete { background: #ffebee; color: #c62828; }
-        .btn-delete:hover { background: #ffcdd2; }
-        .btn-add-site { background: #e8f5e9; color: #2e7d32; }
-        .btn-add-site:hover { background: #c8e6c9; }
-
-        .category-body { display: none; padding: 0 20px 20px 20px; border-top: 1px solid #f0f0f0; background: #fafbfc; }
-        .category-body.open { display: block; }
-        .site-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #eee; background: white; border-radius: 6px; margin-top: 6px; }
-        .site-item:last-child { border-bottom: none; }
-        .site-item .site-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-        .site-item .site-icon { width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .site-item .site-icon img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
-        .site-item .site-name {
-            font-weight: 500;
-            color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px;
+        [data-theme="dark"] {
+            --bg-base: #0f0e17; --bg-surface: #1a1926;
+            --bg-card: rgba(255,255,255,0.04); --bg-card-hover: rgba(255,255,255,0.08);
+            --bg-nav: rgba(15,14,23,0.75); --bg-input: rgba(255,255,255,0.05);
+            --text-1: #fffffe; --text-2: rgba(255,255,255,0.6); --text-3: rgba(255,255,255,0.32);
+            --accent: #7f5af0; --accent-2: #e16162; --accent-3: #2cb67d;
+            --accent-soft: rgba(127,90,240,0.12); --accent-glow: rgba(127,90,240,0.25);
+            --border: rgba(255,255,255,0.07); --border-hover: rgba(255,255,255,0.14);
+            --orb-1: rgba(102,126,234,0.18); --orb-2: rgba(118,75,162,0.14); --orb-3: rgba(240,147,251,0.1);
+            --shadow-card: 0 2px 12px rgba(0,0,0,0.2); --shadow-hover: 0 8px 32px rgba(0,0,0,0.35);
         }
-        .site-item .site-url { color: #7c83ff; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 12px; flex: 1; }
-        .site-item .site-url a { color: #7c83ff; text-decoration: none; }
-        .site-item .site-url a:hover { text-decoration: underline; }
-        .site-item .site-actions { display: flex; gap: 4px; flex-shrink: 0; }
-        .btn-site-edit, .btn-site-delete, .btn-site-move {
-            padding: 3px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
+        [data-theme="light"] {
+            --bg-base: #f5f5f7; --bg-surface: #ffffff;
+            --bg-card: rgba(255,255,255,0.85); --bg-card-hover: rgba(255,255,255,0.95);
+            --bg-nav: rgba(245,245,247,0.78); --bg-input: rgba(0,0,0,0.04);
+            --text-1: #1d1d1f; --text-2: rgba(29,29,31,0.72); --text-3: rgba(29,29,31,0.52);
+            --accent: #6c47d6; --accent-2: #d64547; --accent-3: #1a9d6a;
+            --accent-soft: rgba(108,71,214,0.08); --accent-glow: rgba(108,71,214,0.18);
+            --border: rgba(0,0,0,0.06); --border-hover: rgba(0,0,0,0.12);
+            --orb-1: rgba(102,126,234,0.12); --orb-2: rgba(118,75,162,0.08); --orb-3: rgba(240,147,251,0.06);
+            --shadow-card: 0 1px 8px rgba(0,0,0,0.04); --shadow-hover: 0 6px 24px rgba(0,0,0,0.08);
         }
-        .btn-site-edit { background: #e3f2fd; color: #1976d2; }
-        .btn-site-edit:hover { background: #bbdefb; }
-        .btn-site-delete { background: #ffebee; color: #c62828; }
-        .btn-site-delete:hover { background: #ffcdd2; }
-        .btn-site-move { background: #fff3e0; color: #e65100; }
-        .btn-site-move:hover { background: #ffe0b2; }
-        .empty-sites { text-align: center; padding: 20px; color: #999; font-size: 14px; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: 'Sora', 'Noto Sans SC', system-ui, sans-serif;
+            background: var(--bg-base); color: var(--text-1);
+            min-height: 100dvh; overflow-x: hidden; line-height: 1.55;
+            transition: background 0.5s var(--ease), color 0.5s var(--ease);
+        }
+        .bg-orbs { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); will-change: transform; }
+        .orb-1 { width: 420px; height: 420px; background: var(--orb-1); top: -8%; left: -5%; animation: f1 22s ease-in-out infinite; }
+        .orb-2 { width: 350px; height: 350px; background: var(--orb-2); top: 40%; right: -8%; animation: f2 28s ease-in-out infinite; }
+        .orb-3 { width: 300px; height: 300px; background: var(--orb-3); bottom: -5%; left: 30%; animation: f3 25s ease-in-out infinite; }
+        @keyframes f1 { 0%,100%{ transform: translate(0,0); } 50%{ transform: translate(60px,40px); } }
+        @keyframes f2 { 0%,100%{ transform: translate(0,0); } 50%{ transform: translate(-50px,-60px); } }
+        @keyframes f3 { 0%,100%{ transform: translate(0,0); } 50%{ transform: translate(40px,-30px); } }
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: var(--space-md) var(--space-lg);
+            background: var(--bg-nav); backdrop-filter: blur(20px) saturate(1.4);
+            border-bottom: 1px solid var(--border); transition: background 0.5s var(--ease);
+        }
+        .logo { display: flex; align-items: center; gap: var(--space-sm); text-decoration: none; color: var(--text-1); }
+        .logo-ico { font-size: 1.5rem; }
+        .logo-text { font-size: var(--text-lg); font-weight: 700; letter-spacing: -0.02em; }
+        .logo-text span { color: var(--accent); }
+        .nav-right { display: flex; align-items: center; gap: var(--space-md); }
+        .nav-links { display: flex; list-style: none; gap: var(--space-xs); }
+        .nav-links a {
+            text-decoration: none; color: var(--text-2); font-size: var(--text-sm); font-weight: 500;
+            padding: var(--space-xs) var(--space-md); border-radius: var(--r-pill);
+            transition: all 0.3s var(--ease);
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-1); background: var(--accent-soft); }
+        .theme-btn {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-pill);
+            width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; overflow: hidden; transition: all 0.3s var(--ease);
+        }
+        .theme-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+        .theme-btn i { font-style: normal; font-size: 1rem; transition: transform 0.4s var(--ease); }
+        [data-theme="dark"] .i-moon { display: none; }
+        [data-theme="light"] .i-sun { display: none; }
+        .mob-btn {
+            display: none; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--r-sm); width: 36px; height: 36px; cursor: pointer;
+            align-items: center; justify-content: center; color: var(--text-1);
+        }
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; flex-direction: column; position: absolute;
+                top: 100%; left: 0; right: 0; background: var(--bg-nav);
+                backdrop-filter: blur(20px); padding: var(--space-md);
+                border-bottom: 1px solid var(--border);
+            }
+            .nav-links.open { display: flex; }
+            .mob-btn { display: flex; }
+        }
+        .page-wrap {
+            position: relative; z-index: 1;
+            max-width: 700px; margin: 0 auto;
+            padding: calc(70px + var(--space-xl)) var(--space-lg) var(--space-xl);
+        }
+        .page-header { text-align: center; margin-bottom: var(--space-xl); }
+        .page-header h1 { font-size: var(--text-3xl); font-weight: 700; letter-spacing: -0.03em; margin-bottom: var(--space-sm); }
+        .page-header h1 .grad {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .page-header p { color: var(--text-2); font-size: var(--text-base); max-width: 500px; margin: 0 auto; }
 
-        /* 模态框 */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-overlay.show { display: flex; }
-        .modal { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-        .modal h2 { margin-bottom: 20px; color: #333; }
-        .modal .form-group { margin-bottom: 16px; }
-        .modal label { display: block; margin-bottom: 6px; font-weight: 500; color: #555; font-size: 14px; }
-        .modal input, .modal select, .modal textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; }
-        .modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: #667eea; }
-        .modal textarea { resize: vertical; min-height: 60px; }
-        .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
-        .btn-cancel { padding: 10px 20px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; }
-        .btn-save { padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .btn-fetch-icon { float: right; background: #7c83ff; color: white; border: none; padding: 2px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: background 0.2s; }
-        .btn-fetch-icon:hover { background: #6366f1; }
-        .btn-fetch-icon:disabled { background: #aaa; cursor: not-allowed; }
+        /* FORM */
+        .form-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--r-lg); padding: var(--space-lg);
+            backdrop-filter: blur(12px);
+        }
+        .form-group { margin-bottom: var(--space-md); }
+        .form-group label {
+            display: block; font-size: var(--text-sm); font-weight: 500;
+            color: var(--text-2); margin-bottom: var(--space-xs);
+        }
+        .form-group label .req { color: var(--accent-2); }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: var(--space-sm) var(--space-md);
+            background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: var(--r-md); color: var(--text-1);
+            font-family: inherit; font-size: var(--text-base);
+            transition: all 0.3s var(--ease); outline: none;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: var(--text-3); }
+        .form-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+        .form-select option { background: var(--bg-surface); color: var(--text-1); }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        .form-hint { font-size: var(--text-xs); color: var(--text-3); margin-top: 4px; }
 
-        .toast { position: fixed; top: 20px; right: 20px; padding: 16px 24px; background: #333; color: white; border-radius: 8px; font-size: 14px; opacity: 0; transform: translateY(-20px); transition: all 0.3s; z-index: 2000; }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.success { background: #22c55e; }
-        .toast.error { background: #ef4444; }
+        .submit-btn {
+            width: 100%; padding: var(--space-sm) var(--space-lg);
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff; border: none; border-radius: var(--r-md);
+            font-family: inherit; font-size: var(--text-base); font-weight: 600;
+            cursor: pointer; transition: all 0.3s var(--ease);
+            letter-spacing: 0.5px;
+        }
+        .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px var(--accent-glow); }
+        .submit-btn:active { transform: translateY(0); }
+
+        /* RULES */
+        .rules-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--r-lg); padding: var(--space-lg);
+            backdrop-filter: blur(12px); margin-top: var(--space-md);
+        }
+        .rules-card h2 {
+            font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--space-md);
+            display: flex; align-items: center; gap: var(--space-sm);
+        }
+        .rules-list { list-style: none; }
+        .rules-list li {
+            position: relative; padding-left: 24px; margin-bottom: var(--space-sm);
+            font-size: var(--text-sm); color: var(--text-2); line-height: 1.6;
+        }
+        .rules-list li::before {
+            content: ''; position: absolute; left: 0; top: 8px;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--accent-soft); border: 2px solid var(--accent);
+        }
+
+        /* SUCCESS MSG */
+        .success-msg {
+            display: none; text-align: center; padding: var(--space-xl) var(--space-lg);
+        }
+        .success-msg.show { display: block; }
+        .success-msg .ico { font-size: 3rem; margin-bottom: var(--space-md); }
+        .success-msg h3 { font-size: var(--text-xl); font-weight: 600; margin-bottom: var(--space-sm); }
+        .success-msg p { color: var(--text-2); font-size: var(--text-base); }
+
+        .footer {
+            position: relative; z-index: 1; text-align: center; padding: var(--space-lg);
+            color: var(--text-3); font-size: var(--text-sm);
+            border-top: 1px solid var(--border); margin-top: var(--space-xl);
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .rv { opacity: 0; transform: translateY(16px); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+        .rv.vis { opacity: 1; transform: none; }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="sidebar-brand">
-            <div class="logo">🐕</div>
-            <div class="text">Dog<span>Nav</span></div>
-        </div>
-        <nav class="sidebar-nav">
-            <div class="nav-section">内容管理</div>
-            <a href="/admin/dashboard"><span class="icon">📋</span> 站点管理</a>
-            <a href="/admin/categories" class="active"><span class="icon">📂</span> 分类管理</a>
-            <a href="/admin/pages"><span class="icon">📄</span> 页面管理</a>
-            <a href="/admin/links"><span class="icon">🔗</span> 友链管理</a>
-            <div class="nav-section">互动管理</div>
-            <a href="/admin/submissions"><span class="icon">📮</span> 提交审核</a>
-            <a href="/admin/health"><span class="icon">🩺</span> 站点检测</a>
-            <div class="nav-section">数据分析</div>
-            <a href="/admin/stats"><span class="icon">📊</span> 统计看板</a>
-            <a href="/admin/logs"><span class="icon">📝</span> 操作日志</a>
-            <div class="nav-section">系统</div>
-            <a href="/admin/users"><span class="icon">👥</span> 用户管理</a>
-            <a href="/admin/backup"><span class="icon">💾</span> 备份恢复</a>
-            <a href="/admin/settings"><span class="icon">⚙️</span> 系统设置</a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="#" onclick="logout()"><span class="icon">🚪</span> 退出登录</a>
-        </div>
-    </aside>
+<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
-    <div class="main">
-        <div class="topbar">
-            <h1>分类管理</h1>
-            <div class="user-info">
-                <div class="avatar">A</div>
-                <span>Admin</span>
+<nav class="navbar">
+    <a href="index.html" class="logo"><div class="logo-ico">🐕</div><div class="logo-text">Dog<span>Nav</span></div></a>
+    <div class="nav-right">
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="links.html">友链</a></li>
+            <li><a href="about.html">关于</a></li>
+            <li><a href="contribute.html" class="active">提交</a></li>
+        </ul>
+        <button class="theme-btn" id="themeBtn" aria-label="切换主题"><i class="i-sun">☀️</i><i class="i-moon">🌙</i></button>
+        <button class="mob-btn" id="mobBtn" aria-label="菜单"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <div class="page-header rv">
+        <h1>提交 <span class="grad">收录</span></h1>
+        <p>发现了好网站？推荐给我们吧</p>
+    </div>
+
+    <div class="form-card rv" id="formCard">
+        <form id="submitForm">
+            <div class="form-group">
+                <label>网站名称 <span class="req">*</span></label>
+                <input type="text" class="form-input" id="siteName" placeholder="例如：GitHub" required>
             </div>
-        </div>
-        <div class="container">
-            <div class="toolbar">
-                <div></div>
-                <button class="btn-add" onclick="openCategoryModal()">+ 添加分类</button>
+            <div class="form-group">
+                <label>网站地址 <span class="req">*</span></label>
+                <input type="url" class="form-input" id="siteUrl" placeholder="https://example.com" required>
+                <div class="form-hint">请确保网址可以正常访问</div>
             </div>
-            <div id="categoryList"></div>
-        </div>
+            <div class="form-group">
+                <label>网站描述 <span class="req">*</span></label>
+                <input type="text" class="form-input" id="siteDesc" placeholder="一句话描述这个网站" required maxlength="50">
+                <div class="form-hint">简洁明了，不超过 50 字</div>
+            </div>
+            <div class="form-group">
+                <label>所属分类 <span class="req">*</span></label>
+                <select class="form-select" id="siteCat" required>
+                    <option value="">请选择分类</option>
+                    <option value="recommend">⭐ 常用推荐</option>
+                    <option value="video">🎬 影视资源</option>
+                    <option value="anime">🌸 动漫</option>
+                    <option value="software">💿 软件博客</option>
+                    <option value="tools">🔧 在线工具</option>
+                    <option value="news">📰 资讯</option>
+                    <option value="community">💬 社区</option>
+                    <option value="ai">🤖 AI 工具</option>
+                    <option value="dev">💻 开发编程</option>
+                    <option value="design">🎨 设计素材</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>推荐理由</label>
+                <textarea class="form-textarea" id="siteReason" placeholder="为什么推荐这个网站？（选填）"></textarea>
+            </div>
+            <div class="form-group">
+                <label>你的联系方式</label>
+                <input type="text" class="form-input" id="siteContact" placeholder="邮箱或 GitHub ID（选填）">
+                <div class="form-hint">方便我们通知你审核结果</div>
+            </div>
+            <button type="submit" class="submit-btn">提交收录申请</button>
+        </form>
     </div>
 
-    <!-- 添加/编辑分类模态框 -->
-    <div class="modal-overlay" id="categoryModal">
-        <div class="modal">
-            <h2 id="categoryModalTitle">添加分类</h2>
-            <form id="categoryForm">
-                <div class="form-group">
-                    <label>分类 ID *</label>
-                    <input type="text" id="catId" required placeholder="如: video">
-                </div>
-                <div class="form-group">
-                    <label>分类名称 *</label>
-                    <input type="text" id="catName" required placeholder="如: 影视资源">
-                </div>
-                <div class="form-group">
-                    <label>图标 (emoji)</label>
-                    <input type="text" id="catIcon" placeholder="如: 🎬">
-                </div>
-                <div class="form-group">
-                    <label>排序</label>
-                    <input type="number" id="catSort" value="0" min="0">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeCategoryModal()">取消</button>
-                    <button type="submit" class="btn-save">保存</button>
-                </div>
-            </form>
-        </div>
+    <div class="success-msg" id="successMsg">
+        <div class="ico">🎉</div>
+        <h3>提交成功！</h3>
+        <p>感谢你的推荐，我们会尽快审核处理。</p>
     </div>
 
-    <!-- 添加/编辑站点模态框 -->
-    <div class="modal-overlay" id="siteModal">
-        <div class="modal">
-            <h2 id="siteModalTitle">添加站点</h2>
-            <form id="siteForm">
-                <input type="hidden" id="editSiteId">
-                <div class="form-group">
-                    <label>网站名称 *</label>
-                    <input type="text" id="editSiteName" required>
-                    <div style="font-size:12px;color:#888;margin-top:4px;">📌 请填写站点名称，如“元宝”、“ChatGPT”，不要填写图标 URL</div>
-                </div>
-                <div class="form-group"><label>URL *</label><input type="url" id="editSiteUrl" required placeholder="https://"></div>
-                <div class="form-group">
-                    <label>描述 <button type="button" class="btn-fetch-icon" onclick="fetchDesc()">自动获取</button></label>
-                    <textarea id="editSiteDesc"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>图标 (emoji 或 URL) <button type="button" class="btn-fetch-icon" onclick="fetchIcon()">🔗 自动获取</button></label>
-                    <input type="text" id="editSiteIcon" placeholder="🌐 或 https://...">
-                </div>
-                <div class="form-group">
-                    <label>分类</label>
-                    <select id="editSiteCategory"></select>
-                </div>
-                <div class="form-group">
-                    <label>排序权重</label>
-                    <input type="number" id="editSiteSort" value="0" min="0">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeSiteModal()">取消</button>
-                    <button type="submit" class="btn-save">保存</button>
-                </div>
-            </form>
-        </div>
+    <div class="rules-card rv">
+        <h2><span>📋</span> 收录标准</h2>
+        <ul class="rules-list">
+            <li>网站必须可以正常访问，且已运营 3 个月以上</li>
+            <li>内容健康合法，不含违法、暴力、色情等信息</li>
+            <li>网站应具有一定的实用价值或独特性</li>
+            <li>不接受纯导航站、SEO 站、垃圾采集站</li>
+            <li>提交后我们会在 3 个工作日内审核</li>
+            <li>审核通过后会在导航中展示，不通过会邮件通知</li>
+        </ul>
     </div>
+</div>
 
-    <!-- 移动站点模态框 -->
-    <div class="modal-overlay" id="moveModal">
-        <div class="modal">
-            <h2>移动站点到其他分类</h2>
-            <form id="moveForm">
-                <input type="hidden" id="moveSiteId">
-                <div class="form-group">
-                    <label>当前分类</label>
-                    <p style="padding:8px 12px; background:#f5f5f5; border-radius:4px; color:#555;" id="moveCurrentName"></p>
-                </div>
-                <div class="form-group">
-                    <label>目标分类 *</label>
-                    <select id="moveTargetCategory" required>
-                        <option value="">-- 请选择 --</option>
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeMoveModal()">取消</button>
-                    <button type="submit" class="btn-save">确认移动</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<footer class="footer"><p>跃迁向导 &copy; 2026 — Design by <a href="https://yueqianxiangdao.com" target="_blank">CangDog</a> · <a href="https://yueqianxiangdao.com" target="_blank">GitHub</a></p></footer>
 
-    <div class="toast" id="toast"></div>
+<script>
+const H = document.documentElement;
+const savedTheme = localStorage.getItem('跃迁向导-theme');
+if (savedTheme) H.setAttribute('data-theme', savedTheme);
 
-    <script>
-        // ─── 认证 ───
-        if (!sessionStorage.getItem('admin_logged_in')) window.location.href = '/admin';
-        function logout() {
-            sessionStorage.removeItem('admin_logged_in');
-            sessionStorage.removeItem('admin_token');
-            window.location.href = '/admin';
-        }
-        function authHeaders() {
-            return {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('admin_token'),
-                'Content-Type': 'application/json'
-            };
-        }
+document.getElementById('themeBtn').addEventListener('click', () => {
+    const next = H.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    H.setAttribute('data-theme', next);
+    localStorage.setItem('跃迁向导-theme', next);
+});
+document.getElementById('mobBtn').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('vis'), i * 60); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.rv').forEach(el => { setTimeout(() => { const r = el.getBoundingClientRect(); if (r.top < window.innerHeight && r.bottom > 0) { el.classList.add('vis'); } else { obs.observe(el); } }, 50); });
 
-        // ─── Toast ───
-        function showToast(msg, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.className = 'toast ' + type + ' show';
-            clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // ─── 自动获取图标（只填充图标字段，绝不污染名称） ───
-        async function fetchIcon() {
-            const urlInput = document.getElementById('editSiteUrl');
-            const iconInput = document.getElementById('editSiteIcon');
-            const btn = document.querySelector('#siteModal .btn-fetch-icon:last-child');
-            const url = urlInput.value.trim();
-            if (!url) { showToast('请先填写URL', 'error'); return; }
-            btn.disabled = true;
-            btn.textContent = '⏳ 获取中...';
-            try {
-                const res = await fetch('/api/fetch-icon?url=' + encodeURIComponent(url));
-                const data = await res.json();
-                if (data.icon && typeof data.icon === 'string' && data.icon.trim().length > 0) {
-                    iconInput.value = data.icon.trim();
-                    showToast('图标已获取');
-                } else {
-                    showToast('未获取到有效图标，可手动填写', 'error');
-                }
-                if (data.description && typeof data.description === 'string' && data.description.trim().length > 0) {
-                    const descInput = document.getElementById('editSiteDesc');
-                    if (!descInput.value.trim()) {
-                        descInput.value = data.description.trim();
-                    }
-                }
-            } catch (err) {
-                showToast('获取失败', 'error');
+// Dynamic categories from API
+(async function loadCats() {
+    try {
+        const res = await fetch('/api/categories');
+        if (res.ok) {
+            const cats = await res.json();
+            const activeCats = cats.filter(c => c.is_active);
+            if (activeCats.length > 0) {
+                const sel = document.getElementById('siteCat');
+                sel.innerHTML = '<option value="">请选择分类</option>' +
+                    activeCats.map(c =>
+                        `<option value="${c.id}">${c.icon || '📁'} ${c.name}</option>`
+                    ).join('');
             }
+            // If no active cats from API, keep the hardcoded options in HTML
+        }
+    } catch (err) { /* keep hardcoded options */ }
+})();
+
+// Load site icon from settings
+(async function() {
+    try {
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+            const settings = await res.json();
+            if (settings.site_icon) {
+                let link = document.querySelector('link[rel="icon"]');
+                if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+                link.href = settings.site_icon;
+            }
+        }
+    } catch (err) {}
+})();
+
+// Form submission → POST to CMS API
+document.getElementById('submitForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('siteName').value.trim();
+    const url = document.getElementById('siteUrl').value.trim();
+    const desc = document.getElementById('siteDesc').value.trim();
+    const cat = document.getElementById('siteCat').value;
+    const reason = document.getElementById('siteReason').value.trim();
+    const contact = document.getElementById('siteContact').value.trim();
+    if (!name || !url || !desc || !cat) return;
+
+    const btn = this.querySelector('.submit-btn');
+    btn.textContent = '提交中...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('/api/submissions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name, url,
+                description: reason || desc,
+                category: cat,
+                submitter_email: contact
+            })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            document.getElementById('formCard').style.display = 'none';
+            document.getElementById('successMsg').classList.add('show');
+        } else {
+            alert(data.error || '提交失败，请稍后重试');
+            btn.textContent = '提交收录申请';
             btn.disabled = false;
-            btn.textContent = ' 自动获取';
         }
-
-        // ─── 自动获取描述（仅填充描述） ───
-        async function fetchDesc() {
-            const urlInput = document.getElementById('editSiteUrl');
-            const descInput = document.getElementById('editSiteDesc');
-            const btn = document.querySelector('#siteModal .btn-fetch-icon:first-child');
-            const url = urlInput.value.trim();
-            if (!url) { showToast('请先填写URL', 'error'); return; }
-            btn.disabled = true;
-            btn.textContent = '⏳ 获取中...';
-            try {
-                const res = await fetch('/api/fetch-icon?url=' + encodeURIComponent(url));
-                const data = await res.json();
-                if (data.description && typeof data.description === 'string' && data.description.trim().length > 0) {
-                    if (!descInput.value.trim()) {
-                        descInput.value = data.description.trim();
-                        showToast('描述已获取');
-                    } else {
-                        showToast('描述已存在，未覆盖');
-                    }
-                } else {
-                    showToast('未获取到描述', 'error');
-                }
-            } catch (err) {
-                showToast('获取失败', 'error');
-            }
-            btn.disabled = false;
-            btn.textContent = ' 自动获取';
-        }
-
-        // ─── 全局变量 ───
-        let allCats = [];
-        let allSites = [];
-        let expandedCatId = null;
-
-        // ─── 加载数据 ───
-        async function loadData() {
-            try {
-                const [catsRes, sitesRes] = await Promise.all([
-                    fetch('/api/categories'),
-                    fetch('/api/sites')
-                ]);
-                allCats = await catsRes.json();
-                allSites = await sitesRes.json();
-                renderCategories();
-            } catch (err) {
-                showToast('加载数据失败', 'error');
-            }
-        }
-
-        function getSiteCount(categoryId) {
-            return allSites.filter(s => (s.category || s.c) === categoryId && s.status !== 'inactive').length;
-        }
-
-        function getSitesByCategory(categoryId) {
-            return allSites.filter(s => (s.category || s.c) === categoryId && s.status !== 'inactive');
-        }
-
-        // ─── 渲染 ───
-        function renderCategories() {
-            const container = document.getElementById('categoryList');
-            if (!allCats || allCats.length === 0) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">暂无分类</div>';
-                return;
-            }
-            container.innerHTML = allCats.map(c => {
-                const count = getSiteCount(c.id);
-                const isOpen = (expandedCatId === c.id);
-                return `
-                <div class="category-card" data-cat-id="${c.id}">
-                    <div class="category-header" onclick="toggleCategory('${c.id}')">
-                        <div class="left">
-                            <span class="icon">${c.icon || '📁'}</span>
-                            <div class="info">
-                                <div class="name">${c.name}</div>
-                                <div class="id">${c.id}</div>
-                            </div>
-                            <div class="stats">
-                                <span class="site-count">📋 ${count} 个站点</span>
-                                <span class="badge ${c.is_active ? 'badge-active' : 'badge-inactive'}">${c.is_active ? '启用' : '禁用'}</span>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <span class="expand-icon ${isOpen ? 'open' : ''}">▼</span>
-                            <div class="category-actions" onclick="event.stopPropagation();">
-                                <button class="btn-add-site" onclick="openAddSiteModal('${c.id}')">+ 站点</button>
-                                <button class="btn-edit" onclick="editCategory('${c.id}')">编辑</button>
-                                <button class="btn-delete" onclick="deleteCategory('${c.id}')">删除</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="category-body ${isOpen ? 'open' : ''}" id="body-${c.id}">
-                        <div id="sites-${c.id}">
-                            ${isOpen ? renderSiteList(c.id) : ''}
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // ─── ★ 核心修复：图标显示为图片，绝不显示文本URL ───
-        function renderSiteList(categoryId) {
-            const sites = getSitesByCategory(categoryId);
-            if (sites.length === 0) {
-                return `<div class="empty-sites">该分类下暂无站点</div>`;
-            }
-            return sites.map(s => {
-                // 1. 处理显示名称（如果 name 是 URL，提取域名）
-                let displayName = s.name || '未命名';
-                if (displayName.startsWith('http://') || displayName.startsWith('https://')) {
-                    try {
-                        const urlObj = new URL(s.url || displayName);
-                        displayName = urlObj.hostname.replace(/^www\./, '');
-                    } catch {
-                        displayName = '站点';
-                    }
-                }
-                if (displayName.length > 30) {
-                    displayName = displayName.substring(0, 30) + '…';
-                }
-
-                // 2. 处理图标：如果是 URL 则渲染为图片，否则显示为 emoji/文本
-                let iconHtml = s.icon || '🌐';
-                if (typeof iconHtml === 'string' && (iconHtml.startsWith('http://') || iconHtml.startsWith('https://'))) {
-                    iconHtml = `<img src="${iconHtml}" alt="图标" onerror="this.outerHTML='🌐'">`;
-                }
-
-                const titleAttr = (s.name && s.name.length > 30) ? `title="${s.name}"` : '';
-                return `
-                <div class="site-item" data-site-id="${s.id}">
-                    <div class="site-info">
-                        <div class="site-icon">${iconHtml}</div>
-                        <span class="site-name" ${titleAttr}>${displayName}</span>
-                        <span class="site-url"><a href="${s.url}" target="_blank">${s.url}</a></span>
-                    </div>
-                    <div class="site-actions">
-                        <button class="btn-site-edit" onclick="editSite(${s.id})">编辑</button>
-                        <button class="btn-site-move" onclick="openMoveModal(${s.id})">移动</button>
-                        <button class="btn-site-delete" onclick="deleteSite(${s.id})">删除</button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // ─── 展开/收起 ───
-        async function toggleCategory(categoryId) {
-            if (expandedCatId === categoryId) {
-                expandedCatId = null;
-            } else {
-                expandedCatId = categoryId;
-                const container = document.getElementById(`sites-${categoryId}`);
-                if (container && !container.innerHTML) {
-                    container.innerHTML = renderSiteList(categoryId);
-                }
-            }
-            renderCategories();
-            if (expandedCatId) {
-                const card = document.querySelector(`.category-card[data-cat-id="${expandedCatId}"]`);
-                if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-
-        // ─── 分类 CRUD ───
-        function openCategoryModal(cat = null) {
-            document.getElementById('categoryModalTitle').textContent = cat ? '编辑分类' : '添加分类';
-            document.getElementById('catId').value = cat ? cat.id : '';
-            document.getElementById('catId').disabled = !!cat;
-            document.getElementById('catName').value = cat ? cat.name : '';
-            document.getElementById('catIcon').value = cat ? cat.icon || '' : '';
-            document.getElementById('catSort').value = cat ? cat.sort_order || 0 : 0;
-            document.getElementById('categoryModal').classList.add('show');
-        }
-
-        function closeCategoryModal() {
-            document.getElementById('categoryModal').classList.remove('show');
-            document.getElementById('catId').disabled = false;
-        }
-
-        function editCategory(id) {
-            const cat = allCats.find(c => c.id === id);
-            if (cat) openCategoryModal(cat);
-        }
-
-        async function deleteCategory(id) {
-            const cat = allCats.find(c => c.id === id);
-            const count = getSiteCount(id);
-            if (count > 0) {
-                if (!confirm(`分类 "${cat?.name || id}" 下有 ${count} 个站点，删除分类后这些站点将失去分类。确定删除吗？`)) return;
-            } else {
-                if (!confirm('确定删除此分类？')) return;
-            }
-            try {
-                await fetch(`/api/categories/${id}`, { method: 'DELETE', headers: authHeaders() });
-                showToast('分类已删除');
-                if (expandedCatId === id) expandedCatId = null;
-                await loadData();
-            } catch (err) {
-                showToast('删除失败', 'error');
-            }
-        }
-
-        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('catId').value;
-            const isEdit = allCats.some(c => c.id === id);
-            const data = {
-                id,
-                name: document.getElementById('catName').value,
-                icon: document.getElementById('catIcon').value,
-                sort_order: parseInt(document.getElementById('catSort').value) || 0
-            };
-            try {
-                await fetch(isEdit ? `/api/categories/${id}` : '/api/categories', {
-                    method: isEdit ? 'PUT' : 'POST',
-                    headers: authHeaders(),
-                    body: JSON.stringify(data)
-                });
-                showToast(isEdit ? '已更新' : '已添加');
-                closeCategoryModal();
-                await loadData();
-            } catch (err) {
-                showToast('保存失败', 'error');
-            }
-        });
-
-        // ─── 从分类卡片直接添加站点 ───
-        function openAddSiteModal(categoryId) {
-            document.getElementById('siteModalTitle').textContent = '添加站点';
-            document.getElementById('editSiteId').value = '';
-            document.getElementById('editSiteName').value = '';
-            document.getElementById('editSiteUrl').value = '';
-            document.getElementById('editSiteDesc').value = '';
-            document.getElementById('editSiteIcon').value = '';
-            document.getElementById('editSiteSort').value = 0;
-
-            const catSelect = document.getElementById('editSiteCategory');
-            catSelect.innerHTML = allCats.map(c =>
-                `<option value="${c.id}" ${c.id === categoryId ? 'selected' : ''}>${c.icon || '📁'} ${c.name}</option>`
-            ).join('');
-            document.getElementById('siteModal').classList.add('show');
-        }
-
-        // ─── 站点操作 ───
-        function openSiteModal(site = null) {
-            document.getElementById('siteModalTitle').textContent = site ? '编辑站点' : '添加站点';
-            document.getElementById('editSiteId').value = site ? site.id : '';
-            document.getElementById('editSiteName').value = site ? site.name : '';
-            document.getElementById('editSiteUrl').value = site ? site.url : '';
-            document.getElementById('editSiteDesc').value = site ? site.description || '' : '';
-            document.getElementById('editSiteIcon').value = site ? site.icon || '' : '';
-            document.getElementById('editSiteSort').value = site ? site.sort_order || 0 : 0;
-            const catSelect = document.getElementById('editSiteCategory');
-            catSelect.innerHTML = allCats.map(c =>
-                `<option value="${c.id}" ${site && site.category === c.id ? 'selected' : ''}>${c.icon || '📁'} ${c.name}</option>`
-            ).join('');
-            if (!site && allCats.length) catSelect.value = allCats[0].id;
-            document.getElementById('siteModal').classList.add('show');
-        }
-
-        function closeSiteModal() {
-            document.getElementById('siteModal').classList.remove('show');
-        }
-
-        function editSite(id) {
-            const site = allSites.find(s => s.id === id);
-            if (site) openSiteModal(site);
-        }
-
-        async function deleteSite(id) {
-            if (!confirm('确定要删除这个站点吗？')) return;
-            try {
-                await fetch(`/api/sites/${id}`, { method: 'DELETE', headers: authHeaders() });
-                showToast('站点已删除');
-                await loadData();
-                if (expandedCatId) {
-                    const container = document.getElementById(`sites-${expandedCatId}`);
-                    if (container) container.innerHTML = renderSiteList(expandedCatId);
-                }
-            } catch (err) {
-                showToast('删除失败', 'error');
-            }
-        }
-
-        document.getElementById('siteForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('editSiteId').value;
-            const data = {
-                name: document.getElementById('editSiteName').value,
-                url: document.getElementById('editSiteUrl').value,
-                description: document.getElementById('editSiteDesc').value,
-                icon: document.getElementById('editSiteIcon').value,
-                category: document.getElementById('editSiteCategory').value,
-                sort_order: parseInt(document.getElementById('editSiteSort').value) || 0
-            };
-            try {
-                await fetch(id ? `/api/sites/${id}` : '/api/sites', {
-                    method: id ? 'PUT' : 'POST',
-                    headers: authHeaders(),
-                    body: JSON.stringify(data)
-                });
-                showToast(id ? '站点已更新' : '站点已添加');
-                closeSiteModal();
-                await loadData();
-                if (expandedCatId) {
-                    const container = document.getElementById(`sites-${expandedCatId}`);
-                    if (container) container.innerHTML = renderSiteList(expandedCatId);
-                }
-            } catch (err) {
-                showToast('保存失败', 'error');
-            }
-        });
-
-        // ─── 移动站点 ───
-        function openMoveModal(siteId) {
-            const site = allSites.find(s => s.id === siteId);
-            if (!site) { showToast('站点不存在', 'error'); return; }
-            const currentCat = allCats.find(c => c.id === site.category);
-            document.getElementById('moveSiteId').value = siteId;
-            document.getElementById('moveCurrentName').textContent = currentCat ? `${currentCat.icon || '📁'} ${currentCat.name}` : '未分类';
-
-            const select = document.getElementById('moveTargetCategory');
-            select.innerHTML = '<option value="">-- 请选择 --</option>';
-            allCats.forEach(c => {
-                if (c.id !== site.category) {
-                    select.innerHTML += `<option value="${c.id}">${c.icon || '📁'} ${c.name}</option>`;
-                }
-            });
-            if (allCats.length <= 1) {
-                showToast('没有其他分类可移动', 'error');
-                return;
-            }
-            document.getElementById('moveModal').classList.add('show');
-        }
-
-        function closeMoveModal() {
-            document.getElementById('moveModal').classList.remove('show');
-        }
-
-        document.getElementById('moveForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const siteId = document.getElementById('moveSiteId').value;
-            const targetCategory = document.getElementById('moveTargetCategory').value;
-            if (!targetCategory) { showToast('请选择目标分类', 'error'); return; }
-            try {
-                const site = allSites.find(s => s.id == siteId);
-                if (!site) { showToast('站点不存在', 'error'); return; }
-                const data = {
-                    name: site.name,
-                    url: site.url,
-                    description: site.description || '',
-                    icon: site.icon || '',
-                    category: targetCategory,
-                    sort_order: site.sort_order || 0
-                };
-                await fetch(`/api/sites/${siteId}`, {
-                    method: 'PUT',
-                    headers: authHeaders(),
-                    body: JSON.stringify(data)
-                });
-                showToast('移动成功');
-                closeMoveModal();
-                await loadData();
-                if (expandedCatId) {
-                    const container = document.getElementById(`sites-${expandedCatId}`);
-                    if (container) container.innerHTML = renderSiteList(expandedCatId);
-                }
-            } catch (err) {
-                showToast('移动失败', 'error');
-            }
-        });
-
-        // ─── 模态框关闭事件 ───
-        document.getElementById('categoryModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeCategoryModal();
-        });
-        document.getElementById('siteModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeSiteModal();
-        });
-        document.getElementById('moveModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeMoveModal();
-        });
-
-        // ─── 初始化 ───
-        loadData();
-    </script>
+    } catch (err) {
+        alert('网络错误，请稍后重试');
+        btn.textContent = '提交收录申请';
+        btn.disabled = false;
+    }
+});
+</script>
+    <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({id:"3QqrtFUgaoteGzJA",ck:"3QqrtFUgaoteGzJA"})</script>
 </body>
 </html>
