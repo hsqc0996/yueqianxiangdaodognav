@@ -36,60 +36,190 @@
         .container { padding: 24px; }
         .toolbar { display: flex; justify-content: space-between; margin-bottom: 20px; }
         .btn-add { padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .card {
-            background: white; border-radius: 12px; padding: 16px 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            transition: all 0.2s;
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+
+        /* ─── 分类卡片 ─── */
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: box-shadow 0.2s;
+            overflow: hidden;
         }
-        .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
-        .card-left { display: flex; align-items: center; gap: 16px; flex: 1; cursor: pointer; }
-        .card-icon { font-size: 24px; width: 40px; text-align: center; }
-        .card-info { flex: 1; }
-        .card-name { font-weight: 600; color: #333; font-size: 15px; }
-        .card-id { font-size: 12px; color: #888; }
-        .card-stats { display: flex; align-items: center; gap: 12px; }
-        .site-count {
-            background: #e8f0fe; color: #1a73e8;
-            padding: 2px 12px; border-radius: 12px;
-            font-size: 12px; font-weight: 600;
+        .category-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .category-header {
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
         }
-        .card-actions { display: flex; gap: 6px; flex-shrink: 0; }
-        .btn-edit, .btn-delete, .btn-view-sites {
-            padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;
+        .category-header:hover { background: #fafbfc; }
+        .category-header .left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+        .category-header .icon { font-size: 22px; }
+        .category-header .info { flex: 1; }
+        .category-header .name { font-weight: 600; color: #333; font-size: 15px; }
+        .category-header .id { font-size: 12px; color: #888; }
+        .category-header .stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-right: 12px;
+        }
+        .category-header .site-count {
+            background: #e8f0fe;
+            color: #1a73e8;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-active { background: #e8f5e9; color: #2e7d32; }
+        .badge-inactive { background: #fafafa; color: #999; }
+        .expand-icon {
+            font-size: 18px;
+            color: #aaa;
+            transition: transform 0.25s ease;
+            margin-left: 4px;
+        }
+        .expand-icon.open { transform: rotate(180deg); }
+        .category-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .btn-edit, .btn-delete {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
         }
         .btn-edit { background: #e3f2fd; color: #1976d2; }
         .btn-edit:hover { background: #bbdefb; }
         .btn-delete { background: #ffebee; color: #c62828; }
         .btn-delete:hover { background: #ffcdd2; }
-        .btn-view-sites { background: #e8f5e9; color: #2e7d32; }
-        .btn-view-sites:hover { background: #c8e6c9; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-        .badge-active { background: #e8f5e9; color: #2e7d32; }
-        .badge-inactive { background: #fafafa; color: #999; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-overlay.show { display: flex; }
-        .modal { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
-        .modal h2 { margin-bottom: 20px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-        .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
-        .btn-cancel { padding: 10px 20px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; }
-        .btn-save { padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
 
-        /* ═══ 查看站点弹窗 ═══ */
-        .sites-modal .modal { max-width: 600px; max-height: 80vh; }
-        .sites-modal .site-list { max-height: 400px; overflow-y: auto; }
-        .sites-modal .site-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 8px 12px; border-bottom: 1px solid #f0f0f0;
+        /* ─── 展开区域 ─── */
+        .category-body {
+            display: none;
+            padding: 0 20px 20px 20px;
+            border-top: 1px solid #f0f0f0;
+            background: #fafbfc;
         }
-        .sites-modal .site-item:last-child { border-bottom: none; }
-        .sites-modal .site-item .name { font-weight: 500; color: #333; }
-        .sites-modal .site-item .url { color: #7c83ff; font-size: 13px; text-decoration: none; }
-        .sites-modal .site-item .url:hover { text-decoration: underline; }
-        .sites-modal .empty-msg { text-align: center; padding: 40px; color: #999; }
+        .category-body.open { display: block; }
+        .site-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            background: white;
+            border-radius: 6px;
+            margin-top: 6px;
+        }
+        .site-item:last-child { border-bottom: none; }
+        .site-item .site-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        .site-item .site-icon {
+            font-size: 18px;
+            width: 28px;
+            text-align: center;
+        }
+        .site-item .site-name {
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .site-item .site-url {
+            color: #7c83ff;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-left: 12px;
+        }
+        .site-item .site-url a {
+            color: #7c83ff;
+            text-decoration: none;
+        }
+        .site-item .site-url a:hover { text-decoration: underline; }
+        .site-item .site-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .btn-site-edit, .btn-site-delete {
+            padding: 3px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-site-edit { background: #e3f2fd; color: #1976d2; }
+        .btn-site-edit:hover { background: #bbdefb; }
+        .btn-site-delete { background: #ffebee; color: #c62828; }
+        .btn-site-delete:hover { background: #ffcdd2; }
+        .empty-sites {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* ─── 模态框（编辑站点用） ─── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white; padding: 30px; border-radius: 12px;
+            width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+        }
+        .modal h2 { margin-bottom: 20px; color: #333; }
+        .modal .form-group { margin-bottom: 16px; }
+        .modal label { display: block; margin-bottom: 6px; font-weight: 500; color: #555; font-size: 14px; }
+        .modal input, .modal select, .modal textarea {
+            width: 100%; padding: 10px; border: 1px solid #ddd;
+            border-radius: 6px; font-size: 14px; font-family: inherit;
+        }
+        .modal input:focus, .modal select:focus, .modal textarea:focus {
+            outline: none; border-color: #667eea;
+        }
+        .modal textarea { resize: vertical; min-height: 60px; }
+        .modal-actions {
+            display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;
+        }
+        .btn-cancel {
+            padding: 10px 20px; background: #f5f5f5; border: 1px solid #ddd;
+            border-radius: 6px; cursor: pointer;
+        }
+        .btn-save {
+            padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;
+        }
         .toast {
             position: fixed; top: 20px; right: 20px;
             padding: 16px 24px; background: #333; color: white;
@@ -100,8 +230,6 @@
         .toast.show { opacity: 1; transform: translateY(0); }
         .toast.success { background: #22c55e; }
         .toast.error { background: #ef4444; }
-        .expand-icon { font-size: 12px; color: #aaa; margin-left: 4px; transition: transform 0.2s; }
-        .expand-icon.open { transform: rotate(180deg); }
     </style>
 </head>
 <body>
@@ -143,16 +271,16 @@
         <div class="container">
             <div class="toolbar">
                 <div></div>
-                <button class="btn-add" onclick="openModal()">+ 添加分类</button>
+                <button class="btn-add" onclick="openCategoryModal()">+ 添加分类</button>
             </div>
             <div id="categoryList"></div>
         </div>
     </div>
 
-    <!-- 编辑/添加分类弹窗 -->
-    <div class="modal-overlay" id="modalOverlay">
+    <!-- 添加/编辑分类模态框 -->
+    <div class="modal-overlay" id="categoryModal">
         <div class="modal">
-            <h2 id="modalTitle">添加分类</h2>
+            <h2 id="categoryModalTitle">添加分类</h2>
             <form id="categoryForm">
                 <div class="form-group">
                     <label>分类 ID *</label>
@@ -171,23 +299,48 @@
                     <input type="number" id="catSort" value="0" min="0">
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">取消</button>
+                    <button type="button" class="btn-cancel" onclick="closeCategoryModal()">取消</button>
                     <button type="submit" class="btn-save">保存</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 查看分类下站点弹窗 -->
-    <div class="modal-overlay sites-modal" id="sitesModalOverlay">
+    <!-- 编辑站点模态框 -->
+    <div class="modal-overlay" id="siteModal">
         <div class="modal">
-            <h2 id="sitesModalTitle">分类下的站点</h2>
-            <div class="site-list" id="sitesList">
-                <div class="empty-msg">加载中...</div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeSitesModal()">关闭</button>
-            </div>
+            <h2 id="siteModalTitle">编辑站点</h2>
+            <form id="siteForm">
+                <input type="hidden" id="editSiteId">
+                <div class="form-group">
+                    <label>网站名称 *</label>
+                    <input type="text" id="editSiteName" required>
+                </div>
+                <div class="form-group">
+                    <label>URL *</label>
+                    <input type="url" id="editSiteUrl" required placeholder="https://">
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea id="editSiteDesc"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>图标 (emoji 或 URL)</label>
+                    <input type="text" id="editSiteIcon" placeholder="🌐 或 https://...">
+                </div>
+                <div class="form-group">
+                    <label>分类</label>
+                    <select id="editSiteCategory"></select>
+                </div>
+                <div class="form-group">
+                    <label>排序权重</label>
+                    <input type="number" id="editSiteSort" value="0" min="0">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeSiteModal()">取消</button>
+                    <button type="submit" class="btn-save">保存</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -208,7 +361,7 @@
             };
         }
 
-        // ─── Toast 提示 ───
+        // ─── Toast ───
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
@@ -220,26 +373,20 @@
         // ─── 全局变量 ───
         let allCats = [];
         let allSites = [];
+        let expandedCatId = null; // 当前展开的分类ID
 
-        // ─── 加载分类和站点 ───
+        // ─── 加载数据 ───
         async function loadCategories() {
             try {
-                const res = await fetch('/api/categories');
-                allCats = await res.json();
-                // 同时加载站点数据以统计数量
-                await loadSitesForStats();
+                const [catsRes, sitesRes] = await Promise.all([
+                    fetch('/api/categories'),
+                    fetch('/api/sites')
+                ]);
+                allCats = await catsRes.json();
+                allSites = await sitesRes.json();
                 renderCategories();
             } catch (err) {
-                showToast('加载分类失败', 'error');
-            }
-        }
-
-        async function loadSitesForStats() {
-            try {
-                const res = await fetch('/api/sites');
-                allSites = await res.json();
-            } catch (err) {
-                allSites = [];
+                showToast('加载数据失败', 'error');
             }
         }
 
@@ -247,6 +394,11 @@
             return allSites.filter(s => (s.category || s.c) === categoryId && s.status !== 'inactive').length;
         }
 
+        function getSitesByCategory(categoryId) {
+            return allSites.filter(s => (s.category || s.c) === categoryId && s.status !== 'inactive');
+        }
+
+        // ─── 渲染分类列表 ───
         function renderCategories() {
             const container = document.getElementById('categoryList');
             if (!allCats || allCats.length === 0) {
@@ -255,81 +407,121 @@
             }
             container.innerHTML = allCats.map(c => {
                 const count = getSiteCount(c.id);
+                const isOpen = (expandedCatId === c.id);
                 return `
-                <div class="card">
-                    <div class="card-left" onclick="viewCategorySites('${c.id}')" title="点击查看该分类下的所有站点">
-                        <div class="card-icon">${c.icon || '📁'}</div>
-                        <div class="card-info">
-                            <div class="card-name">${c.name}</div>
-                            <div class="card-id">${c.id}</div>
+                <div class="category-card" data-cat-id="${c.id}">
+                    <div class="category-header" onclick="toggleCategory('${c.id}')">
+                        <div class="left">
+                            <span class="icon">${c.icon || '📁'}</span>
+                            <div class="info">
+                                <div class="name">${c.name}</div>
+                                <div class="id">${c.id}</div>
+                            </div>
+                            <div class="stats">
+                                <span class="site-count">📋 ${count} 个站点</span>
+                                <span class="badge ${c.is_active ? 'badge-active' : 'badge-inactive'}">${c.is_active ? '启用' : '禁用'}</span>
+                            </div>
                         </div>
-                        <div class="card-stats">
-                            <span class="site-count">📋 ${count} 个站点</span>
-                            <span class="badge ${c.is_active ? 'badge-active' : 'badge-inactive'}">${c.is_active ? '启用' : '禁用'}</span>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="expand-icon ${isOpen ? 'open' : ''}">▼</span>
+                            <div class="category-actions" onclick="event.stopPropagation();">
+                                <button class="btn-edit" onclick="editCategory('${c.id}')">编辑</button>
+                                <button class="btn-delete" onclick="deleteCategory('${c.id}')">删除</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-actions">
-                        <button class="btn-view-sites" onclick="event.stopPropagation();viewCategorySites('${c.id}')">📋 查看</button>
-                        <button class="btn-edit" onclick="event.stopPropagation();editCategory('${c.id}')">编辑</button>
-                        <button class="btn-delete" onclick="event.stopPropagation();deleteCategory('${c.id}')">删除</button>
+                    <div class="category-body ${isOpen ? 'open' : ''}" id="body-${c.id}">
+                        <div id="sites-${c.id}">
+                            ${isOpen ? renderSiteList(c.id) : ''}
+                        </div>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        // ─── 查看分类下的站点 ───
-        async function viewCategorySites(categoryId) {
-            const cat = allCats.find(c => c.id === categoryId);
-            if (!cat) return;
+        // ─── 渲染站点列表（展开区域） ───
+        function renderSiteList(categoryId) {
+            const sites = getSitesByCategory(categoryId);
+            if (sites.length === 0) {
+                return `<div class="empty-sites">该分类下暂无站点</div>`;
+            }
+            return sites.map(s => {
+                const icon = s.icon || '🌐';
+                return `
+                <div class="site-item" data-site-id="${s.id}">
+                    <div class="site-info">
+                        <span class="site-icon">${icon}</span>
+                        <span class="site-name">${s.name}</span>
+                        <span class="site-url"><a href="${s.url}" target="_blank">${s.url}</a></span>
+                    </div>
+                    <div class="site-actions">
+                        <button class="btn-site-edit" onclick="editSite(${s.id})">编辑</button>
+                        <button class="btn-site-delete" onclick="deleteSite(${s.id})">删除</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
 
-            document.getElementById('sitesModalTitle').textContent = `📂 ${cat.icon || '📁'} ${cat.name} 下的站点`;
-
-            // 获取该分类下的所有站点
-            try {
-                const res = await fetch('/api/sites');
-                const sites = await res.json();
-                const filtered = sites.filter(s => (s.category || s.c) === categoryId);
-
-                const list = document.getElementById('sitesList');
-                if (filtered.length === 0) {
-                    list.innerHTML = '<div class="empty-msg">该分类下暂无站点</div>';
-                } else {
-                    list.innerHTML = filtered.map(s => `
-                        <div class="site-item">
-                            <span class="name">${s.icon || '🌐'} ${s.name}</span>
-                            <a href="${s.url}" target="_blank" class="url">${s.url}</a>
-                        </div>
-                    `).join('');
+        // ─── 展开/收起分类 ───
+        async function toggleCategory(categoryId) {
+            if (expandedCatId === categoryId) {
+                // 收起当前
+                expandedCatId = null;
+            } else {
+                // 展开新的，先收起旧的
+                expandedCatId = categoryId;
+                // 如果该分类尚未加载站点列表，则加载（但我们已经预先加载所有站点，直接渲染即可）
+                const body = document.getElementById(`body-${categoryId}`);
+                if (body) {
+                    const sitesContainer = document.getElementById(`sites-${categoryId}`);
+                    if (sitesContainer) {
+                        // 如果还没有内容，渲染
+                        if (!sitesContainer.innerHTML) {
+                            sitesContainer.innerHTML = renderSiteList(categoryId);
+                        }
+                    }
                 }
-                document.getElementById('sitesModalOverlay').classList.add('show');
-            } catch (err) {
-                showToast('加载站点失败', 'error');
+            }
+            // 重新渲染所有分类以更新展开状态
+            renderCategories();
+            // 滚动到当前展开的分类
+            if (expandedCatId) {
+                const card = document.querySelector(`.category-card[data-cat-id="${expandedCatId}"]`);
+                if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
-        function closeSitesModal() {
-            document.getElementById('sitesModalOverlay').classList.remove('show');
+        // ─── 刷新某个分类的站点列表（用于删除/编辑后更新） ───
+        function refreshCategorySites(categoryId) {
+            const container = document.getElementById(`sites-${categoryId}`);
+            if (container) {
+                container.innerHTML = renderSiteList(categoryId);
+                // 更新站点数量
+                const count = getSiteCount(categoryId);
+                const header = document.querySelector(`.category-card[data-cat-id="${categoryId}"] .site-count`);
+                if (header) header.textContent = `📋 ${count} 个站点`;
+            }
         }
 
         // ─── 分类 CRUD ───
-        function openModal(cat = null) {
-            document.getElementById('modalTitle').textContent = cat ? '编辑分类' : '添加分类';
+        function openCategoryModal(cat = null) {
+            document.getElementById('categoryModalTitle').textContent = cat ? '编辑分类' : '添加分类';
             document.getElementById('catId').value = cat ? cat.id : '';
             document.getElementById('catId').disabled = !!cat;
             document.getElementById('catName').value = cat ? cat.name : '';
             document.getElementById('catIcon').value = cat ? cat.icon || '' : '';
             document.getElementById('catSort').value = cat ? cat.sort_order || 0 : 0;
-            document.getElementById('modalOverlay').classList.add('show');
+            document.getElementById('categoryModal').classList.add('show');
         }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('show');
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('show');
             document.getElementById('catId').disabled = false;
         }
 
         function editCategory(id) {
             const cat = allCats.find(c => c.id === id);
-            if (cat) openModal(cat);
+            if (cat) openCategoryModal(cat);
         }
 
         async function deleteCategory(id) {
@@ -342,7 +534,8 @@
             }
             try {
                 await fetch(`/api/categories/${id}`, { method: 'DELETE', headers: authHeaders() });
-                showToast('已删除');
+                showToast('分类已删除');
+                if (expandedCatId === id) expandedCatId = null;
                 loadCategories();
             } catch (err) {
                 showToast('删除失败', 'error');
@@ -359,25 +552,107 @@
                 icon: document.getElementById('catIcon').value,
                 sort_order: parseInt(document.getElementById('catSort').value) || 0
             };
-
-            const url = isEdit ? `/api/categories/${id}` : '/api/categories';
-            const method = isEdit ? 'PUT' : 'POST';
             try {
-                await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(data) });
+                await fetch(isEdit ? `/api/categories/${id}` : '/api/categories', {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify(data)
+                });
                 showToast(isEdit ? '已更新' : '已添加');
-                closeModal();
+                closeCategoryModal();
                 loadCategories();
             } catch (err) {
                 showToast('保存失败', 'error');
             }
         });
 
-        // ─── 点击外部关闭弹窗 ───
-        document.getElementById('modalOverlay').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeModal();
+        // ─── 站点操作 ───
+        function openSiteModal(site = null) {
+            document.getElementById('siteModalTitle').textContent = site ? '编辑站点' : '添加站点';
+            document.getElementById('editSiteId').value = site ? site.id : '';
+            document.getElementById('editSiteName').value = site ? site.name : '';
+            document.getElementById('editSiteUrl').value = site ? site.url : '';
+            document.getElementById('editSiteDesc').value = site ? site.description || '' : '';
+            document.getElementById('editSiteIcon').value = site ? site.icon || '' : '';
+            document.getElementById('editSiteSort').value = site ? site.sort_order || 0 : 0;
+
+            // 填充分类下拉框
+            const catSelect = document.getElementById('editSiteCategory');
+            catSelect.innerHTML = allCats.map(c => `<option value="${c.id}" ${site && site.category === c.id ? 'selected' : ''}>${c.icon || '📁'} ${c.name}</option>`).join('');
+            if (!site) catSelect.value = allCats.length > 0 ? allCats[0].id : '';
+
+            document.getElementById('siteModal').classList.add('show');
+        }
+
+        function closeSiteModal() {
+            document.getElementById('siteModal').classList.remove('show');
+        }
+
+        function editSite(id) {
+            const site = allSites.find(s => s.id === id);
+            if (site) openSiteModal(site);
+        }
+
+        async function deleteSite(id) {
+            if (!confirm('确定要删除这个站点吗？')) return;
+            const site = allSites.find(s => s.id === id);
+            try {
+                await fetch(`/api/sites/${id}`, { method: 'DELETE', headers: authHeaders() });
+                showToast('站点已删除');
+                // 刷新数据
+                await loadCategories(); // 重新加载所有数据
+                // 如果之前有展开的分类，保持展开
+                if (expandedCatId) {
+                    // 重新展开
+                    const body = document.getElementById(`body-${expandedCatId}`);
+                    if (body) {
+                        const container = document.getElementById(`sites-${expandedCatId}`);
+                        if (container) container.innerHTML = renderSiteList(expandedCatId);
+                    }
+                }
+            } catch (err) {
+                showToast('删除失败', 'error');
+            }
+        }
+
+        document.getElementById('siteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editSiteId').value;
+            const data = {
+                name: document.getElementById('editSiteName').value,
+                url: document.getElementById('editSiteUrl').value,
+                description: document.getElementById('editSiteDesc').value,
+                icon: document.getElementById('editSiteIcon').value,
+                category: document.getElementById('editSiteCategory').value,
+                sort_order: parseInt(document.getElementById('editSiteSort').value) || 0
+            };
+            try {
+                await fetch(id ? `/api/sites/${id}` : '/api/sites', {
+                    method: id ? 'PUT' : 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify(data)
+                });
+                showToast(id ? '站点已更新' : '站点已添加');
+                closeSiteModal();
+                loadCategories();
+                if (expandedCatId) {
+                    // 重新展开
+                    setTimeout(() => {
+                        const container = document.getElementById(`sites-${expandedCatId}`);
+                        if (container) container.innerHTML = renderSiteList(expandedCatId);
+                    }, 100);
+                }
+            } catch (err) {
+                showToast('保存失败', 'error');
+            }
         });
-        document.getElementById('sitesModalOverlay').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeSitesModal();
+
+        // ─── 模态框关闭事件 ───
+        document.getElementById('categoryModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeCategoryModal();
+        });
+        document.getElementById('siteModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeSiteModal();
         });
 
         // ─── 初始化 ───
