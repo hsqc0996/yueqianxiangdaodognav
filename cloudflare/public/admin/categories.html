@@ -484,6 +484,7 @@
             if (cat) openCategoryModal(cat);
         }
 
+        // ★★★ 修复：删除分类时使用 encodeURIComponent 编码 ID，并增加详细错误处理 ★★★
         async function deleteCategory(id) {
             const cat = allCats.find(c => c.id === id);
             const count = getSiteCount(id);
@@ -493,12 +494,23 @@
                 if (!confirm('确定删除此分类？')) return;
             }
             try {
-                await fetch(`/api/categories/${id}`, { method: 'DELETE', headers: authHeaders() });
-                showToast('分类已删除');
-                if (expandedCatId === id) expandedCatId = null;
-                await loadData();
+                // 使用 encodeURIComponent 处理包含特殊字符的 ID（如 Map&Navigation）
+                const url = `/api/categories/${encodeURIComponent(id)}`;
+                const response = await fetch(url, { method: 'DELETE', headers: authHeaders() });
+                const result = await response.json();
+                if (response.ok && result.message) {
+                    showToast('分类已删除');
+                    // 如果当前展开的分类被删除，重置展开状态
+                    if (expandedCatId === id) expandedCatId = null;
+                    // 重新加载数据以刷新列表
+                    await loadData();
+                } else {
+                    // 如果后端返回错误，显示具体信息
+                    showToast(result.error || '删除失败，请检查网络或联系管理员', 'error');
+                }
             } catch (err) {
-                showToast('删除失败', 'error');
+                console.error('删除分类出错:', err);
+                showToast('删除失败，请检查网络连接', 'error');
             }
         }
 
